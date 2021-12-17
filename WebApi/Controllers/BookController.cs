@@ -56,8 +56,7 @@ namespace WebApi.Controllers
             if (book is not null)
                 return BadRequest();
 
-            try
-            {
+
                 CreateBookValidator validator = new CreateBookValidator();
                 validator.ValidateAndThrow(model);
                 ValidationResult validationResult = validator.Validate(model);
@@ -66,12 +65,6 @@ namespace WebApi.Controllers
                 _context.Books.Add(entity);
                 _context.SaveChanges();
                 return Created("", "kayıt eklendi");
-            }
-            catch (Exception ex)
-            {
-
-                return BadRequest(ex.Message);
-            }
 
         }
 
@@ -93,13 +86,25 @@ namespace WebApi.Controllers
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            Book book = _context.Books.FirstOrDefault(m => m.Id == id);
-            if (book is null)
-                return BadRequest();
+            try
+            {
+                Book book = _context.Books.FirstOrDefault(m => m.Id == id);
 
-            _context.Books.Remove(book);
-            _context.SaveChanges();
-            return NoContent();
+                if (book is null)
+                {
+                    return BadRequest("kitap yok");
+                }
+
+
+                _context.Books.Remove(book);
+                _context.SaveChanges();
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex.Message);
+            }
         }
 
     }
